@@ -1,0 +1,8 @@
+[SERVER]
+#server_ip = 172.24.253.34
+server_ip = 127.0.0.1
+server_port = 36412
+
+[ATTRIBUTE]
+AP_Starting_packet = 134223437
+Number_of_packet = 500

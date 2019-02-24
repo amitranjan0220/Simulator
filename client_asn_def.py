@@ -10,20 +10,32 @@ import time
 from pycrate_asn1dir import S1AP
 from pycrate_asn1rt.utils import *
 from binascii import hexlify, unhexlify
+from six.moves import configparser
+
+# Getting input data for request_parameter.txt
+config = configparser.ConfigParser()
+configFilePath = r'/home/amit/Documents/myproject/Simulator/request_parameter.txt'
+config.read(configFilePath)
+config.sections()
+server_ip = config['SERVER']['server_ip']
+server_port = config['SERVER']['server_port']
+AP_Starting_packet = config['ATTRIBUTE']['AP_Starting_packet']
+Number_of_packet = config['ATTRIBUTE']['Number_of_packet']
+
 
 PDU = S1AP.S1AP_PDU_Descriptions.S1AP_PDU
 
 # Server host and Port
-HOST = '127.0.0.1'
-#HOST = '172.24.253.34'
-PORT = 36412
+HOST = server_ip
+PORT = int(server_port)
+
 
 
 # Creating S1Ap packet
 def creating_packets():
     msg_list = []
-    id = 134223437
-    for num in range(0,20):
+    id = int(AP_Starting_packet)
+    for num in range(0,int(Number_of_packet)):
         IEs = []
         IEs.append({'id': 59, 'value': ('Global-ENB-ID', {'pLMNidentity': b'\x45\xf6\x42', 'eNB-ID': ('homeENB-ID',(id, 28))}), 'criticality': 'reject'})
         IEs.append({'id': 60, 'value': ('ENBname', 'ipaccess'), 'criticality': 'ignore'})
@@ -67,7 +79,7 @@ def send_packet(msg,count):
 
 num_processes = 1
 processes = []
-count = 134223437
+count = int(AP_Starting_packet)
 
 if __name__ == '__main__':
     start = time.time()
