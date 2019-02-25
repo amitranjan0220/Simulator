@@ -21,6 +21,7 @@ server_ip = config['SERVER']['server_ip']
 server_port = config['SERVER']['server_port']
 AP_Starting_packet = config['ATTRIBUTE']['AP_Starting_packet']
 Number_of_packet = config['ATTRIBUTE']['Number_of_packet']
+delay_in_second = int(config['ATTRIBUTE']['delay_in_second'])
 
 
 PDU = S1AP.S1AP_PDU_Descriptions.S1AP_PDU
@@ -29,12 +30,12 @@ PDU = S1AP.S1AP_PDU_Descriptions.S1AP_PDU
 HOST = server_ip
 PORT = int(server_port)
 
+id = int(AP_Starting_packet)
 
 
 # Creating S1Ap packet
-def creating_packets():
+def creating_packets(id):
     msg_list = []
-    id = int(AP_Starting_packet)
     for num in range(0,int(Number_of_packet)):
         IEs = []
         IEs.append({'id': 59, 'value': ('Global-ENB-ID', {'pLMNidentity': b'\x45\xf6\x42', 'eNB-ID': ('homeENB-ID',(id, 28))}), 'criticality': 'reject'})
@@ -51,10 +52,6 @@ def creating_packets():
 
     return msg_list
 
-
-my_list = creating_packets()
-
-
 # Sending packets
 def send_packet(msg,count):
     # Enabiling Heartbeat
@@ -70,11 +67,11 @@ def send_packet(msg,count):
     getpaddrObj.hbinterval = 1
     s.set_paddrparams(getpaddrObj)
     q = s.sctp_send(msg,ppid= 301989888)
-    data = s.recv(1024)
-    if data:
-        print("GOT RESPONSE FOR homeENB-ID NO.{}".format(count))
-    else:
-        print("NO RESPONSE FOR homeENB-ID NO.{}".format(count))
+    #data = s.recv(1024)
+    # if data:
+    #     print("GOT RESPONSE FOR homeENB-ID NO.{}".format(count))
+    # else:
+    #     print("NO RESPONSE FOR homeENB-ID NO.{}".format(count))
     #time.sleep(1)
 
 num_processes = 1
@@ -82,18 +79,24 @@ processes = []
 count = int(AP_Starting_packet)
 
 if __name__ == '__main__':
-    start = time.time()
-    for msg in my_list:
-        process_name = "Process {}".format(num_processes)
-        q = Queue()
-        p = Process(target=send_packet(msg,count), name=process_name)
-        num_processes = num_processes + 1
-        count = count + 1
-        processes.append(p)
-        p.start()
+    while True:
+        my_list = creating_packets(id)
+        start = time.time()
+        for msg in my_list:
+            process_name = "Process {}".format(num_processes)
+            q = Queue()
+            p = Process(target=send_packet(msg,count), name=process_name)
+            num_processes = num_processes + 1
+            count = count + 1
+            processes.append(p)
+            p.start()
 
-    for p in processes:
-        p.join()
+        for p in processes:
+            p.join()
 
-    end = time.time()
-    print("With {} Processes, we took {} seconds to send {} packet".format(num_processes-1,end-start,num_processes-1))
+        end = time.time()
+
+        print("With {} Processes, we took {} seconds to send {} packet".format(num_processes-1,end-start,num_processes-1))
+        id = id + int(Number_of_packet)
+        my_list = creating_packets(id)
+        time.sleep(delay_in_second)

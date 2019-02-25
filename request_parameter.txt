@@ -5,4 +5,5 @@ server_port = 36412
 
 [ATTRIBUTE]
 AP_Starting_packet = 134223437
-Number_of_packet = 500
+Number_of_packet = 5
+delay_in_second = 2
