@@ -22,7 +22,8 @@ server_port = config['SERVER']['server_port']
 AP_Starting_packet = config['ATTRIBUTE']['AP_Starting_packet']
 Number_of_packet = config['ATTRIBUTE']['Number_of_packet']
 delay_in_second = int(config['ATTRIBUTE']['delay_in_second'])
-
+packet_limit = int(config['ATTRIBUTE']['packet_limit'])
+exit_time = int(config['ATTRIBUTE']['exit_time'])
 
 PDU = S1AP.S1AP_PDU_Descriptions.S1AP_PDU
 
@@ -63,9 +64,9 @@ def send_packet(msg,count):
     s.connect((HOST, PORT))
 
     # Setting Heartbeat interval
-    getpaddrObj = s.get_paddrparams(0, (HOST, PORT))
-    getpaddrObj.hbinterval = 1
-    s.set_paddrparams(getpaddrObj)
+    # getpaddrObj = s.get_paddrparams(0, (HOST, PORT))
+    # getpaddrObj.hbinterval = 1
+    # s.set_paddrparams(getpaddrObj)
     q = s.sctp_send(msg,ppid= 301989888)
     #data = s.recv(1024)
     # if data:
@@ -99,4 +100,12 @@ if __name__ == '__main__':
         print("With {} Processes, we took {} seconds to send {} packet".format(num_processes-1,end-start,num_processes-1))
         id = id + int(Number_of_packet)
         my_list = creating_packets(id)
-        time.sleep(delay_in_second)
+        if num_processes < packet_limit:
+            time.sleep(delay_in_second)
+            print('in loop')
+        else:
+            break
+
+
+    print('out of loop')
+    time.sleep(exit_time)

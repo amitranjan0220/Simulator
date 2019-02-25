@@ -5,5 +5,15 @@ server_port = 36412
 
 [ATTRIBUTE]
 AP_Starting_packet = 134223437
-Number_of_packet = 5
+
+# set number of packet to send.
+Number_of_packet = 10
+
+# set time delay after 'Number_of_packet' send.
 delay_in_second = 2
+
+# set limit of ap or packet to send.
+packet_limit = 100
+
+# set wait time after all the packet send.       
+exit_time = 120
