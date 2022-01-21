@@ -6,7 +6,7 @@ future==0.17.1
 gevent==1.4.0
 greenlet==0.4.15
 ipdb==0.11
-ipython==7.3.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.13.2
 jmespath==0.9.3
